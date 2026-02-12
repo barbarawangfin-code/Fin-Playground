@@ -564,8 +564,8 @@
                             <strong>Financing Activities - Debt & Equity Changes:</strong>
                         </p>
                         <p style="line-height: 1.6; color: #555; margin-left: 15px;">
-                            • <strong>Loan increases:</strong> Borrowed money, received cash (positive on CF)<br>
-                            • <strong>Loan decreases:</strong> Paid off debt, used cash (negative on CF)<br>
+                            • <strong>Bank Loans increase:</strong> Borrowed money, received cash (positive on CF)<br>
+                            • <strong>Bank Loans decrease:</strong> Paid off debt, used cash (negative on CF)<br>
                             • <strong>Equity increases:</strong> Owner invested, received cash (positive on CF)<br>
                             • <strong>Equity decreases:</strong> Paid dividends, used cash (negative on CF)
                         </p>
@@ -671,7 +671,7 @@
                         <span style="text-align: right;" id="ap">$500</span>
                     </div>
                     <div class="statement-row">
-                        <span>Loan Payable</span>
+                        <span>Bank Loans</span>
                         <span style="text-align: center; color: #999;" id="beginLoan">$10,000</span>
                         <span style="text-align: right;" id="loan">$10,000</span>
                     </div>
@@ -776,7 +776,7 @@
 
                     <div class="section-label">Financing Activities</div>
                     <div class="statement-row">
-                        <span>Loan Proceeds/Payments</span>
+                        <span>Bank Loan Proceeds/Payments</span>
                         <span id="cfFinancing">$0</span>
                     </div>
 
@@ -951,7 +951,7 @@
                         cfFinancing: state.cfFinancing + 8000
                     };
                 },
-                hint: "This transaction has TWO cash flow effects! Investing: -$8K for equipment purchase. Financing: +$8K from bank loan. Net cash flow = $0, but both activities must be shown separately. Equipment (Gross and Net) increases, Loan Payable increases."
+                hint: "This transaction has TWO cash flow effects! Investing: -$8K for equipment purchase. Financing: +$8K from bank loan. Net cash flow = $0, but both activities must be shown separately. Equipment (Gross and Net) increases, Bank Loans increases."
             },
             {
                 id: 7,
@@ -1014,7 +1014,7 @@
                         cfFinancing: state.cfFinancing - 1000
                     };
                 },
-                hint: "Loan principal payment: Cash decreases (asset), Loan Payable decreases (liability). Financing activity on CF. This is NOT an expense!"
+                hint: "Loan principal payment: Cash decreases (asset), Bank Loans decreases (liability). Financing activity on CF. This is NOT an expense!"
             },
             {
                 id: 11,
