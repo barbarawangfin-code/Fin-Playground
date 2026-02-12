@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BuffsTheBest Financial Statements Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #764ba2;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .stat-box {
+            background: #f0f0f0;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .score {
+            color: #4CAF50;
+            font-size: 1.5em;
+        }
+
+        .streak {
+            color: #FF9800;
+            font-size: 1.5em;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .transaction-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .transaction-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            color: white;
+        }
+
+        .transaction-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.3);
+        }
+
+        .transaction-card.selected {
+            border: 3px solid #FFD700;
+            transform: scale(1.05);
+        }
+
+        .transaction-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .transaction-amount {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .transaction-desc {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .statements-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .statement {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .statement-header {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+            color: #667eea;
+        }
+
+        .statement-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .statement-row.header {
+            font-weight: bold;
+            background: #f5f5f5;
+            border-radius: 5px;
+        }
+
+        .statement-row.total {
+            font-weight: bold;
+            background: #e3f2fd;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 1.1em;
+        }
+
+        .statement-row.changed {
+            background: #fff3cd;
+            animation: highlight 1s ease-in-out;
+        }
+
+        @keyframes highlight {
+            0%, 100% { background: #fff3cd; }
+            50% { background: #ffc107; }
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-process {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-process:hover:not(:disabled) {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .btn-process:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-reset {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #da190b;
+        }
+
+        .btn-hint {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-hint:hover {
+            background: #0b7dda;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            display: none;
+        }
+
+        .feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+
+        .hint-box {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #2196F3;
+            display: none;
+        }
+
+        .hint-box.show {
+            display: block;
+        }
+
+        .section-label {
+            font-weight: bold;
+            margin-top: 10px;
+            color: #764ba2;
+        }
+
+        .positive {
+            color: #4CAF50;
+        }
+
+        .negative {
+            color: #f44336;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .level-indicator {
+            background: #673ab7;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .impact-indicator {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin-left: 5px;
+        }
+
+        .impact-bs {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .impact-is {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .impact-cf {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍦 BuffsTheBest Ice Cream Shop 🍦</h1>
+            <p class="subtitle">Master the Three Financial Statements!</p>
+            <div class="game-stats">
+                <div class="stat-box">
+                    <span>Score: </span><span class="score" id="score">0</span>
+                </div>
+                <div class="stat-box">
+                    <span>Streak: </span><span class="streak" id="streak">0</span> 🔥
+                </div>
+                <div class="stat-box">
+                    <span class="level-indicator" id="level">Level 1: Beginner</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="transaction-panel">
+                <h2 style="margin-bottom: 15px; color: #764ba2;">📋 Monthly Transactions</h2>
+                <p style="margin-bottom: 15px; color: #666;">Select a transaction and process it. Watch how it affects all three statements!</p>
+                <div id="transactions"></div>
+                <div class="controls">
+                    <button class="btn-process" id="processBtn" disabled>Process Transaction</button>
+                </div>
+                <div class="controls">
+                    <button class="btn-hint" id="hintBtn">💡 Show Hint</button>
+                    <button class="btn-reset" id="resetBtn">🔄 Reset Game</button>
+                </div>
+                <div id="feedback" class="feedback"></div>
+                <div id="hint" class="hint-box"></div>
+            </div>
+
+            <div class="statements-container">
+                <!-- Balance Sheet -->
+                <div class="statement">
+                    <div class="statement-header">📊 Balance Sheet (as of current date)</div>
+                    <div class="section-label">Assets</div>
+                    <div class="statement-row">
+                        <span>Cash</span>
+                        <span id="cash">$10,000</span>
+                    </div>
+                    <div class="statement-row">
+                        <span>Accounts Receivable</span>
+                        <span id="ar">$0</span>
+                    </div>
+                    <div class="statement-row">
+                        <span>Inventory</span>
+                        <span id="inventory">$2,000</span>
+                    </div>
+                    <div class="statement-row">
+                        <span>Equipment</span>
+                        <span id="equipment">$15,000</span>
+                    </div>
+                    <div class="statement-row total">
+                        <span>Total Assets</span>
+                        <span id="totalAssets">$27,000</span>
+                    </div>
+
+                    <div class="section-label">Liabilities</div>
+                    <div class="statement-row">
+                        <span>Accounts Payable</span>
+                        <span id="ap">$1,000</span>
+                    </div>
+                    <div class="statement-row">
+                        <span>Loan Payable</span>
+                        <span id="loan">$10,000</span>
+                    </div>
+                    <div class="statement-row total">
+                        <span>Total Liabilities</span>
+                        <span id="totalLiabilities">$11,000</span>
+                    </div>
+
+                    <div class="section-label">Equity</div>
+                    <div class="statement-row">
+                        <span>Owner's Equity</span>
+                        <span id="equity">$16,000</span>
+                    </div>
+                    <div class="statement-row">
+                        <span>Retained Earnings</span>
+                        <span id="retainedEarnings">$0</span>
+                    </div>
+                    <div class="statement-row total">
+                        <span>Total Equity</span>
+                        <span id="totalEquity">$16,000</span>
+                    </div>
+                </div>
+
+                <!-- Income Statement -->
+                <div class="statement">
+                    <div class="statement-header">💰 Income Statement (current period)</div>
+                    <div class="section-label">Revenue</div>
+                    <div class="statement-row">
+                        <span>Ice Cream Sales</span>
+                        <span id="sales">$0</span>
+                    </div>
+                    
+                    <div class="section-label">Expenses</div>
+                    <div class="statement-row">
+                        <span>Cost of Goods Sold</span>
+                        <span id="cogs">$0</span>
+                    </div>
+                    <div class="statement-row">
+                        <span>Rent Expense</span>
+                        <span id="rent">$0</span>
+                    </div>
+                    <div class="statement-row">
+                        <span>Utilities Expense</span>
+                        <span id="utilities">$0</span>
+                    </div>
+                    <div class="statement-row">
+                        <span>Wages Expense</span>
+                        <span id="wages">$0</span>
+                    </div>
+                    <div class="statement-row">
+                        <span>Interest Expense</span>
+                        <span id="interest">$0</span>
+                    </div>
+                    <div class="statement-row total">
+                        <span>Net Income</span>
+                        <span id="netIncome">$0</span>
+                    </div>
+                </div>
+
+                <!-- Cash Flow Statement -->
+                <div class="statement">
+                    <div class="statement-header">💵 Cash Flow Statement (current period)</div>
+                    <div class="section-label">Operating Activities</div>
+                    <div class="statement-row">
+                        <span>Cash from Customers</span>
+                        <span id="cfCustomers">$0</span>
+                    </div>
+                    <div class="statement-row">
+                        <span>Cash to Suppliers</span>
+                        <span id="cfSuppliers">$0</span>
+                    </div>
+                    <div class="statement-row">
+                        <span>Cash for Expenses</span>
+                        <span id="cfExpenses">$0</span>
+                    </div>
+                    <div class="statement-row total">
+                        <span>Net Cash from Operations</span>
+                        <span id="cfOperations">$0</span>
+                    </div>
+
+                    <div class="section-label">Investing Activities</div>
+                    <div class="statement-row">
+                        <span>Equipment Purchases</span>
+                        <span id="cfInvesting">$0</span>
+                    </div>
+
+                    <div class="section-label">Financing Activities</div>
+                    <div class="statement-row">
+                        <span>Loan Payments</span>
+                        <span id="cfFinancing">$0</span>
+                    </div>
+
+                    <div class="statement-row total">
+                        <span>Net Change in Cash</span>
+                        <span id="netCashChange">$0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        let gameState = {
+            cash: 10000,
+            ar: 0,
+            inventory: 2000,
+            equipment: 15000,
+            ap: 1000,
+            loan: 10000,
+            equity: 16000,
+            retainedEarnings: 0,
+            sales: 0,
+            cogs: 0,
+            rent: 0,
+            utilities: 0,
+            wages: 0,
+            interest: 0,
+            cfCustomers: 0,
+            cfSuppliers: 0,
+            cfExpenses: 0,
+            cfInvesting: 0,
+            cfFinancing: 0,
+            score: 0,
+            streak: 0,
+            level: 1
+        };
+
+        let selectedTransaction = null;
+        let changedElements = [];
+
+        // Transaction definitions
+        const transactions = [
+            {
+                id: 1,
+                title: "Ice Cream Sales (Cash)",
+                amount: 5000,
+                description: "Sold ice cream to walk-in customers for cash",
+                level: 1,
+                impacts: ['BS', 'IS', 'CF'],
+                process: (state) => {
+                    const cogs = 2000; // 40% cost
+                    return {
+                        cash: state.cash + 5000,
+                        inventory: state.inventory - cogs,
+                        sales: state.sales + 5000,
+                        cogs: state.cogs + cogs,
+                        cfCustomers: state.cfCustomers + 5000
+                    };
+                },
+                hint: "Cash sales increase Cash (BS), Sales Revenue (IS), and Cash from Customers (CF). Don't forget COGS reduces Inventory!"
+            },
+            {
+                id: 2,
+                title: "Purchase Inventory (Cash)",
+                amount: 1500,
+                description: "Bought ice cream ingredients with cash",
+                level: 1,
+                impacts: ['BS', 'CF'],
+                process: (state) => {
+                    return {
+                        cash: state.cash - 1500,
+                        inventory: state.inventory + 1500,
+                        cfSuppliers: state.cfSuppliers - 1500
+                    };
+                },
+                hint: "Buying inventory with cash: Cash goes down, Inventory goes up (both assets). Shows in Cash Flow as payment to suppliers. No income statement impact yet!"
+            },
+            {
+                id: 3,
+                title: "Pay Rent",
+                amount: 2000,
+                description: "Paid monthly rent for the shop",
+                level: 1,
+                impacts: ['BS', 'IS', 'CF'],
+                process: (state) => {
+                    return {
+                        cash: state.cash - 2000,
+                        rent: state.rent + 2000,
+                        cfExpenses: state.cfExpenses - 2000
+                    };
+                },
+                hint: "Rent payment: Cash decreases (BS), Rent Expense increases (IS), and shows as cash outflow for expenses (CF)."
+            },
+            {
+                id: 4,
+                title: "Ice Cream Sales (Credit)",
+                amount: 2500,
+                description: "Sold ice cream to a catering company on account",
+                level: 2,
+                impacts: ['BS', 'IS'],
+                process: (state) => {
+                    const cogs = 1000;
+                    return {
+                        ar: state.ar + 2500,
+                        inventory: state.inventory - cogs,
+                        sales: state.sales + 2500,
+                        cogs: state.cogs + cogs
+                    };
+                },
+                hint: "Credit sales: No cash yet! Accounts Receivable increases (BS), Sales and COGS hit Income Statement. Cash Flow not affected until payment received."
+            },
+            {
+                id: 5,
+                title: "Collect Receivables",
+                amount: 2500,
+                description: "Received payment from catering company",
+                level: 2,
+                impacts: ['BS', 'CF'],
+                process: (state) => {
+                    return {
+                        cash: state.cash + 2500,
+                        ar: state.ar - 2500,
+                        cfCustomers: state.cfCustomers + 2500
+                    };
+                },
+                hint: "Collecting receivables: Cash up, AR down (both assets on BS). Shows in Cash Flow. No Income Statement impact - revenue was already recorded!"
+            },
+            {
+                id: 6,
+                title: "Purchase Equipment",
+                amount: 5000,
+                description: "Bought a new ice cream maker with cash",
+                level: 2,
+                impacts: ['BS', 'CF'],
+                process: (state) => {
+                    return {
+                        cash: state.cash - 5000,
+                        equipment: state.equipment + 5000,
+                        cfInvesting: state.cfInvesting - 5000
+                    };
+                },
+                hint: "Equipment purchase: Cash decreases, Equipment increases (both BS). Shows in Investing Activities on Cash Flow. This is an asset, not an expense!"
+            },
+            {
+                id: 13,
+                title: "Buy Equipment with Bank Loan",
+                amount: 8000,
+                description: "Bought new freezer equipment, financed with bank loan",
+                level: 2,
+                impacts: ['BS', 'CF'],
+                process: (state) => {
+                    return {
+                        equipment: state.equipment + 8000,
+                        loan: state.loan + 8000,
+                        cfInvesting: state.cfInvesting - 8000,
+                        cfFinancing: state.cfFinancing + 8000
+                    };
+                },
+                hint: "This transaction has TWO cash flow effects! Investing: -$8K for equipment purchase. Financing: +$8K from bank loan. Net cash flow = $0, but both activities must be shown separately. Equipment increases, Loan Payable increases."
+            },
+            {
+                id: 7,
+                title: "Pay Wages",
+                amount: 1800,
+                description: "Paid employee wages for the month",
+                level: 1,
+                impacts: ['BS', 'IS', 'CF'],
+                process: (state) => {
+                    return {
+                        cash: state.cash - 1800,
+                        wages: state.wages + 1800,
+                        cfExpenses: state.cfExpenses - 1800
+                    };
+                },
+                hint: "Wage payment: Cash decreases (BS), Wages Expense increases (IS), operating cash outflow (CF)."
+            },
+            {
+                id: 8,
+                title: "Purchase Inventory (Credit)",
+                amount: 1200,
+                description: "Bought ingredients on account from supplier",
+                level: 2,
+                impacts: ['BS'],
+                process: (state) => {
+                    return {
+                        inventory: state.inventory + 1200,
+                        ap: state.ap + 1200
+                    };
+                },
+                hint: "Buying on credit: Inventory (asset) increases, Accounts Payable (liability) increases. Balance Sheet only! No cash or income impact yet."
+            },
+            {
+                id: 9,
+                title: "Pay Accounts Payable",
+                amount: 1200,
+                description: "Paid supplier for previous credit purchase",
+                level: 2,
+                impacts: ['BS', 'CF'],
+                process: (state) => {
+                    return {
+                        cash: state.cash - 1200,
+                        ap: state.ap - 1200,
+                        cfSuppliers: state.cfSuppliers - 1200
+                    };
+                },
+                hint: "Paying AP: Cash decreases (asset), AP decreases (liability). Operating cash outflow. No expense - that was recorded at purchase!"
+            },
+            {
+                id: 10,
+                title: "Pay Loan Principal",
+                amount: 1000,
+                description: "Made principal payment on loan",
+                level: 3,
+                impacts: ['BS', 'CF'],
+                process: (state) => {
+                    return {
+                        cash: state.cash - 1000,
+                        loan: state.loan - 1000,
+                        cfFinancing: state.cfFinancing - 1000
+                    };
+                },
+                hint: "Loan principal payment: Cash decreases (asset), Loan Payable decreases (liability). Financing activity on CF. This is NOT an expense!"
+            },
+            {
+                id: 11,
+                title: "Pay Loan Interest",
+                amount: 100,
+                description: "Paid interest on loan",
+                level: 3,
+                impacts: ['BS', 'IS', 'CF'],
+                process: (state) => {
+                    return {
+                        cash: state.cash - 100,
+                        interest: state.interest + 100,
+                        cfExpenses: state.cfExpenses - 100
+                    };
+                },
+                hint: "Interest payment: Cash decreases (BS), Interest Expense increases (IS), operating cash outflow (CF). Interest is an expense, unlike principal!"
+            },
+            {
+                id: 12,
+                title: "Pay Utilities",
+                amount: 300,
+                description: "Paid electricity and water bills",
+                level: 1,
+                impacts: ['BS', 'IS', 'CF'],
+                process: (state) => {
+                    return {
+                        cash: state.cash - 300,
+                        utilities: state.utilities + 300,
+                        cfExpenses: state.cfExpenses - 300
+                    };
+                },
+                hint: "Utilities payment: Cash decreases (BS), Utilities Expense increases (IS), operating cash outflow (CF)."
+            }
+        ];
+
+        // Initialize game
+        function init() {
+            renderTransactions();
+            updateDisplay();
+        }
+
+        function renderTransactions() {
+            const container = document.getElementById('transactions');
+            const currentLevel = gameState.level;
+            const availableTransactions = transactions.filter(t => t.level <= currentLevel);
+            
+            container.innerHTML = availableTransactions.map(t => `
+                <div class="transaction-card" data-id="${t.id}">
+                    <div class="transaction-title">
+                        ${t.title}
+                        ${t.impacts.map(i => `<span class="impact-indicator impact-${i.toLowerCase()}">${i}</span>`).join('')}
+                    </div>
+                    <div class="transaction-amount">$${t.amount.toLocaleString()}</div>
+                    <div class="transaction-desc">${t.description}</div>
+                </div>
+            `).join('');
+
+            // Add click handlers
+            document.querySelectorAll('.transaction-card').forEach(card => {
+                card.addEventListener('click', () => selectTransaction(parseInt(card.dataset.id)));
+            });
+        }
+
+        function selectTransaction(id) {
+            selectedTransaction = transactions.find(t => t.id === id);
+            
+            // Update UI
+            document.querySelectorAll('.transaction-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.target.closest('.transaction-card').classList.add('selected');
+            
+            document.getElementById('processBtn').disabled = false;
+            document.getElementById('hint').classList.remove('show');
+            document.getElementById('feedback').style.display = 'none';
+        }
+
+        function processTransaction() {
+            if (!selectedTransaction) return;
+
+            // Clear previous highlights
+            changedElements.forEach(el => el.classList.remove('changed'));
+            changedElements = [];
+
+            // Store old state for comparison
+            const oldState = {...gameState};
+
+            // Process transaction
+            const updates = selectedTransaction.process(gameState);
+            Object.assign(gameState, updates);
+
+            // Calculate derived values
+            updateDerivedValues();
+
+            // Update display
+            updateDisplay();
+
+            // Highlight changed elements
+            highlightChanges(oldState, gameState);
+
+            // Update score
+            gameState.score += 100 * gameState.level;
+            gameState.streak++;
+            updateScore();
+
+            // Check for level up
+            checkLevelUp();
+
+            // Show feedback
+            showFeedback(true, `Great job! Transaction processed correctly. +${100 * gameState.level} points!`);
+
+            // Reset selection
+            selectedTransaction = null;
+            document.querySelectorAll('.transaction-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.getElementById('processBtn').disabled = true;
+        }
+
+        function updateDerivedValues() {
+            // Calculate totals
+            gameState.totalAssets = gameState.cash + gameState.ar + gameState.inventory + gameState.equipment;
+            gameState.totalLiabilities = gameState.ap + gameState.loan;
+            
+            // Calculate net income
+            const totalRevenue = gameState.sales;
+            const totalExpenses = gameState.cogs + gameState.rent + gameState.utilities + gameState.wages + gameState.interest;
+            gameState.netIncome = totalRevenue - totalExpenses;
+            
+            // Update retained earnings with net income
+            gameState.retainedEarnings = gameState.netIncome;
+            
+            // Calculate total equity
+            gameState.totalEquity = gameState.equity + gameState.retainedEarnings;
+            
+            // Calculate cash flow totals
+            gameState.cfOperations = gameState.cfCustomers + gameState.cfSuppliers + gameState.cfExpenses;
+            gameState.netCashChange = gameState.cfOperations + gameState.cfInvesting + gameState.cfFinancing;
+        }
+
+        function updateDisplay() {
+            // Balance Sheet
+            document.getElementById('cash').textContent = formatCurrency(gameState.cash);
+            document.getElementById('ar').textContent = formatCurrency(gameState.ar);
+            document.getElementById('inventory').textContent = formatCurrency(gameState.inventory);
+            document.getElementById('equipment').textContent = formatCurrency(gameState.equipment);
+            document.getElementById('totalAssets').textContent = formatCurrency(gameState.totalAssets);
+            
+            document.getElementById('ap').textContent = formatCurrency(gameState.ap);
+            document.getElementById('loan').textContent = formatCurrency(gameState.loan);
+            document.getElementById('totalLiabilities').textContent = formatCurrency(gameState.totalLiabilities);
+            
+            document.getElementById('equity').textContent = formatCurrency(gameState.equity);
+            document.getElementById('retainedEarnings').textContent = formatCurrency(gameState.retainedEarnings);
+            document.getElementById('totalEquity').textContent = formatCurrency(gameState.totalEquity);
+            
+            // Income Statement
+            document.getElementById('sales').textContent = formatCurrency(gameState.sales);
+            document.getElementById('cogs').textContent = formatCurrency(gameState.cogs);
+            document.getElementById('rent').textContent = formatCurrency(gameState.rent);
+            document.getElementById('utilities').textContent = formatCurrency(gameState.utilities);
+            document.getElementById('wages').textContent = formatCurrency(gameState.wages);
+            document.getElementById('interest').textContent = formatCurrency(gameState.interest);
+            document.getElementById('netIncome').textContent = formatCurrency(gameState.netIncome, true);
+            
+            // Cash Flow
+            document.getElementById('cfCustomers').textContent = formatCurrency(gameState.cfCustomers, true);
+            document.getElementById('cfSuppliers').textContent = formatCurrency(gameState.cfSuppliers, true);
+            document.getElementById('cfExpenses').textContent = formatCurrency(gameState.cfExpenses, true);
+            document.getElementById('cfOperations').textContent = formatCurrency(gameState.cfOperations, true);
+            document.getElementById('cfInvesting').textContent = formatCurrency(gameState.cfInvesting, true);
+            document.getElementById('cfFinancing').textContent = formatCurrency(gameState.cfFinancing, true);
+            document.getElementById('netCashChange').textContent = formatCurrency(gameState.netCashChange, true);
+        }
+
+        function highlightChanges(oldState, newState) {
+            const mappings = {
+                cash: 'cash', ar: 'ar', inventory: 'inventory', equipment: 'equipment',
+                ap: 'ap', loan: 'loan', retainedEarnings: 'retainedEarnings',
+                sales: 'sales', cogs: 'cogs', rent: 'rent', utilities: 'utilities',
+                wages: 'wages', interest: 'interest', netIncome: 'netIncome',
+                cfCustomers: 'cfCustomers', cfSuppliers: 'cfSuppliers',
+                cfExpenses: 'cfExpenses', cfOperations: 'cfOperations',
+                cfInvesting: 'cfInvesting', cfFinancing: 'cfFinancing',
+                netCashChange: 'netCashChange'
+            };
+
+            Object.keys(mappings).forEach(key => {
+                if (oldState[key] !== newState[key]) {
+                    const element = document.getElementById(mappings[key]);
+                    if (element) {
+                        element.closest('.statement-row').classList.add('changed');
+                        changedElements.push(element.closest('.statement-row'));
+                    }
+                }
+            });
+        }
+
+        function formatCurrency(value, showSign = false) {
+            const formatted = Math.abs(value).toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0
+            });
+            
+            if (showSign && value < 0) {
+                return `(${formatted})`;
+            }
+            return formatted;
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = gameState.score.toLocaleString();
+            document.getElementById('streak').textContent = gameState.streak;
+        }
+
+        function checkLevelUp() {
+            const oldLevel = gameState.level;
+            if (gameState.score >= 2000 && gameState.level < 3) {
+                gameState.level = 3;
+            } else if (gameState.score >= 1000 && gameState.level < 2) {
+                gameState.level = 2;
+            }
+
+            if (oldLevel !== gameState.level) {
+                const levelNames = ['', 'Beginner', 'Intermediate', 'Advanced'];
+                document.getElementById('level').textContent = `Level ${gameState.level}: ${levelNames[gameState.level]}`;
+                renderTransactions();
+                showFeedback(true, `🎉 Level Up! You've reached ${levelNames[gameState.level]} level! More transactions unlocked!`);
+            }
+        }
+
+        function showFeedback(isCorrect, message) {
+            const feedback = document.getElementById('feedback');
+            feedback.className = 'feedback ' + (isCorrect ? 'correct' : 'incorrect');
+            feedback.textContent = message;
+            feedback.style.display = 'block';
+        }
+
+        function showHint() {
+            const hint = document.getElementById('hint');
+            if (selectedTransaction) {
+                hint.textContent = selectedTransaction.hint;
+                hint.classList.add('show');
+            } else {
+                hint.textContent = '💡 Select a transaction first to see a hint!';
+                hint.classList.add('show');
+            }
+        }
+
+        function resetGame() {
+            if (confirm('Are you sure you want to reset the game? You will lose all progress.')) {
+                gameState = {
+                    cash: 10000, ar: 0, inventory: 2000, equipment: 15000,
+                    ap: 1000, loan: 10000, equity: 16000, retainedEarnings: 0,
+                    sales: 0, cogs: 0, rent: 0, utilities: 0, wages: 0, interest: 0,
+                    cfCustomers: 0, cfSuppliers: 0, cfExpenses: 0,
+                    cfInvesting: 0, cfFinancing: 0,
+                    score: 0, streak: 0, level: 1
+                };
+                updateDerivedValues();
+                updateDisplay();
+                updateScore();
+                document.getElementById('level').textContent = 'Level 1: Beginner';
+                renderTransactions();
+                document.getElementById('feedback').style.display = 'none';
+                document.getElementById('hint').classList.remove('show');
+            }
+        }
+
+        // Event listeners
+        document.getElementById('processBtn').addEventListener('click', processTransaction);
+        document.getElementById('hintBtn').addEventListener('click', showHint);
+        document.getElementById('resetBtn').addEventListener('click', resetGame);
+
+        // Initialize
+        init();
+    </script>
+</body>
+</html>
