@@ -91,6 +91,21 @@
             color: white;
         }
 
+        .transaction-card.level-1 {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #333;
+        }
+
+        .transaction-card.level-2 {
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            color: #333;
+        }
+
+        .transaction-card.level-3 {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: #333;
+        }
+
         .transaction-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 12px 25px rgba(0,0,0,0.3);
@@ -99,6 +114,51 @@
         .transaction-card.selected {
             border: 3px solid #FFD700;
             transform: scale(1.05);
+        }
+
+        .transaction-card.processed {
+            opacity: 0.6;
+            cursor: pointer;
+            position: relative;
+            border: 2px solid #4CAF50;
+        }
+
+        .transaction-card.processed:hover {
+            opacity: 0.8;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .transaction-card.processed::after {
+            content: '✓ PROCESSED';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(76, 175, 80, 0.95);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.85em;
+        }
+
+        .transaction-card.processed::before {
+            content: 'Click to Undo';
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(255, 152, 0, 0.9);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .transaction-card.processed:hover::before {
+            opacity: 1;
         }
 
         .transaction-title {
@@ -141,10 +201,11 @@
         }
 
         .statement-row {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
             padding: 8px;
             border-bottom: 1px solid #eee;
+            align-items: center;
         }
 
         .statement-row.header {
@@ -169,6 +230,73 @@
         @keyframes highlight {
             0%, 100% { background: #fff3cd; }
             50% { background: #ffc107; }
+        }
+
+        /* Tooltip for showing transaction history */
+        .account-value {
+            position: relative;
+            cursor: help;
+        }
+
+        .account-value:hover {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .account-tooltip {
+            position: absolute;
+            bottom: 100%;
+            right: 0;
+            background: #333;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            white-space: nowrap;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            margin-bottom: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            max-width: 300px;
+            white-space: normal;
+        }
+
+        .account-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            right: 20px;
+            border: 6px solid transparent;
+            border-top-color: #333;
+        }
+
+        .account-value:hover .account-tooltip {
+            opacity: 1;
+        }
+
+        .tooltip-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #FFD700;
+            border-bottom: 1px solid #555;
+            padding-bottom: 4px;
+        }
+
+        .tooltip-transaction {
+            padding: 4px 0;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .tooltip-change-positive {
+            color: #4CAF50;
+        }
+
+        .tooltip-change-negative {
+            color: #f44336;
         }
 
         .controls {
@@ -310,8 +438,141 @@
 <body>
     <div class="container">
         <header>
-            <h1>🍦 BuffsTheBest Ice Cream Shop 🍦</h1>
+            <h1>🍦 Buff's Frozen Delights 🍦</h1>
             <p class="subtitle">Master the Three Financial Statements!</p>
+            
+            <div style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); padding: 20px; border-radius: 10px; margin: 15px 0; text-align: left;">
+                <h3 style="color: #764ba2; margin-bottom: 10px;">📖 Your Mission:</h3>
+                <p style="color: #333; line-height: 1.6; margin-bottom: 10px;">
+                    Welcome to <strong>Buff's Frozen Delights</strong> - the coolest artisan ice cream shop in town! 
+                    You're the new accountant, and your job is to record all the shop's transactions and watch how they 
+                    flow through the three main financial statements.
+                </p>
+                <p style="color: #333; line-height: 1.6; margin-bottom: 10px;">
+                    🎯 <strong>Your Challenge:</strong> Process each transaction and see the magic happen - one transaction 
+                    can affect multiple statements simultaneously! Watch cash flow in and out, inventory transform into sales, 
+                    and profits build up in retained earnings.
+                </p>
+                <p style="color: #555; line-height: 1.6; font-size: 0.95em;">
+                    💡 <strong>Pro Tip:</strong> Pay attention to the <span style="background: #FFD700; padding: 2px 6px; border-radius: 3px;">yellow highlights</span> 
+                    - they show you exactly what changed! You can also click processed transactions to undo them and try different scenarios.
+                </p>
+            </div>
+
+            <details style="background: #E3F2FD; padding: 20px; border-radius: 10px; margin: 15px 0; border-left: 5px solid #2196F3;">
+                <summary style="cursor: pointer; font-size: 1.2em; font-weight: bold; color: #1565C0; margin-bottom: 10px;">
+                    📚 Concept Notes: How the Statements Connect (Click to Expand)
+                </summary>
+                
+                <div style="margin-top: 15px; color: #333;">
+                    <div style="background: #FFF3E0; padding: 15px; border-radius: 8px; border-left: 5px solid #FF9800; margin-bottom: 15px;">
+                        <h4 style="color: #E65100; margin-bottom: 10px;">💡 The Big Picture</h4>
+                        <p style="line-height: 1.6; color: #333;">
+                            Think of it this way:<br><br>
+                            • <strong>Balance Sheet</strong> = Your financial position at a point in time (like a photograph)<br>
+                            • <strong>Income Statement</strong> = Your profitability over a period (like measuring how tall you grew this year)<br>
+                            • <strong>Cash Flow Statement</strong> = Your cash movements over a period (like tracking money in and out of your wallet)<br><br>
+                            All three work together to tell the complete story of your business. Master the connections, and you'll understand accounting!
+                        </p>
+                    </div>
+
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <h4 style="color: #667eea; margin-bottom: 10px;">🎯 Key Concepts to Remember</h4>
+                        <ul style="line-height: 1.8; color: #555; margin-left: 20px;">
+                            <li><strong>Assets = Liabilities + Equity</strong> - Assets show how you USE funds (what you bought), while Liabilities and Equity show the SOURCE of funds (where money came from). This ALWAYS balances (that's why it's called a Balance Sheet!)</li>
+                            <li><strong>Revenue - Expenses = Net Income</strong> - Simple formula, but timing matters!</li>
+                            <li><strong>Accrual ≠ Cash</strong> - You can have profit without cash, or cash without profit</li>
+                            <li><strong>Depreciation is special</strong> - It's an expense that reduces Net Income but doesn't use cash</li>
+                            <li><strong>Buying equipment ≠ Expense</strong> - It's an asset swap: Cash down, Equipment up (Balance Sheet only)</li>
+                            <li><strong>Buying on credit</strong> - Creates Accounts Payable (liability), preserves Cash, no cash outflow until you pay</li>
+                            <li><strong>Loan principal ≠ Expense</strong> - It's a liability reduction (Balance Sheet), not Income Statement</li>
+                            <li><strong>Interest IS an expense</strong> - But loan principal payment is not!</li>
+                            <li><strong>Credit sales create AR</strong> - Revenue recognized immediately, but cash collected later</li>
+                            <li><strong>Working capital matters</strong> - Changes in AR, Inventory, and AP all affect cash flow</li>
+                        </ul>
+                    </div>
+
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <h4 style="color: #667eea; margin-bottom: 10px;">🔗 How Everything Connects</h4>
+                        <p style="line-height: 1.6; margin-bottom: 15px;">
+                            The three financial statements are like three cameras filming the same movie from different angles. 
+                            They all tell the story of your business, but each focuses on something different.
+                        </p>
+                    </div>
+
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <h4 style="color: #667eea; margin-bottom: 10px;">📊 Income Statement ↔️ Balance Sheet</h4>
+                        <p style="line-height: 1.6; margin-bottom: 8px;">
+                            <strong>The Link:</strong> Net Income from the Income Statement flows directly into Retained Earnings on the Balance Sheet.
+                        </p>
+                        <p style="line-height: 1.6; margin-bottom: 8px; font-style: italic; color: #555;">
+                            Example: If you earned $5,000 Net Income, Retained Earnings increases by $5,000. If you lost $2,000, Retained Earnings decreases by $2,000.
+                        </p>
+                        <p style="line-height: 1.6; color: #555;">
+                            <strong>Why?</strong> Profits belong to the owners - they increase ownership (Equity). Losses decrease it. Retained Earnings is where we accumulate these profits/losses.
+                        </p>
+                    </div>
+
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <h4 style="color: #667eea; margin-bottom: 10px;">💰 Income Statement ↔️ Cash Flow Statement</h4>
+                        <p style="line-height: 1.6; margin-bottom: 8px;">
+                            <strong>The Link:</strong> Net Income is the STARTING POINT for Operating Cash Flow (Indirect Method).
+                        </p>
+                        <p style="line-height: 1.6; margin-bottom: 8px; font-style: italic; color: #555;">
+                            Example: Net Income = $5,000, but Cash from Operations might be $3,000 or $7,000. Why? Because of non-cash expenses like depreciation!
+                        </p>
+                        <p style="line-height: 1.6; color: #555;">
+                            <strong>Key Adjustment:</strong><br>
+                            • <strong>Add back Depreciation:</strong> It's an expense that reduces Net Income, but no cash actually left the company. The cash was spent when we bought the equipment. Depreciation just spreads that cost over time.
+                        </p>
+                    </div>
+
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <h4 style="color: #667eea; margin-bottom: 10px;">💵 Balance Sheet ↔️ Cash Flow Statement</h4>
+                        <p style="line-height: 1.6; margin-bottom: 8px;">
+                            <strong>The Link:</strong> The change in Cash on the Balance Sheet MUST equal the Net Change in Cash on the Cash Flow Statement.
+                        </p>
+                        <p style="line-height: 1.6; margin-bottom: 8px; font-style: italic; color: #555;">
+                            Example: If Cash started at $10,000 and ended at $13,000, the Cash Flow Statement must show a Net Change of +$3,000.
+                        </p>
+                        <p style="line-height: 1.6; margin-bottom: 12px; color: #555;">
+                            <strong>Why?</strong> The Balance Sheet shows WHERE you are (snapshot), and the Cash Flow Statement shows HOW you got there (the journey).
+                        </p>
+                        <p style="line-height: 1.6; margin-bottom: 8px; color: #333;">
+                            <strong>Changes in Balance Sheet accounts affect Cash Flow in three sections:</strong>
+                        </p>
+                        <p style="line-height: 1.6; margin-bottom: 8px; color: #333;">
+                            <strong>Operating Activities - Working Capital Changes:</strong>
+                        </p>
+                        <p style="line-height: 1.6; color: #555; margin-left: 15px; margin-bottom: 12px;">
+                            • <strong>AR increases:</strong> Made sales but didn't collect cash yet (subtract from Operations)<br>
+                            • <strong>AR decreases:</strong> Collected cash from past sales (add to Operations)<br>
+                            • <strong>Inventory increases:</strong> Bought inventory, used cash (subtract from Operations)<br>
+                            • <strong>Inventory decreases:</strong> Sold inventory, generated cash (add to Operations)<br>
+                            • <strong>AP increases:</strong> Bought on credit, preserved cash (add to Operations)<br>
+                            • <strong>AP decreases:</strong> Paid suppliers, used cash (subtract from Operations)
+                        </p>
+                        <p style="line-height: 1.6; margin-bottom: 8px; color: #333;">
+                            <strong>Investing Activities - Fixed Asset Changes:</strong>
+                        </p>
+                        <p style="line-height: 1.6; color: #555; margin-left: 15px; margin-bottom: 12px;">
+                            • <strong>Equipment increases:</strong> Bought equipment, used cash (negative on CF)<br>
+                            • <strong>Equipment decreases:</strong> Sold equipment, received cash (positive on CF)<br>
+                            • Note: Depreciation reduces equipment but doesn't affect cash (already adjusted in Operations)
+                        </p>
+                        <p style="line-height: 1.6; margin-bottom: 8px; color: #333;">
+                            <strong>Financing Activities - Debt & Equity Changes:</strong>
+                        </p>
+                        <p style="line-height: 1.6; color: #555; margin-left: 15px;">
+                            • <strong>Loan increases:</strong> Borrowed money, received cash (positive on CF)<br>
+                            • <strong>Loan decreases:</strong> Paid off debt, used cash (negative on CF)<br>
+                            • <strong>Equity increases:</strong> Owner invested, received cash (positive on CF)<br>
+                            • <strong>Equity decreases:</strong> Paid dividends, used cash (negative on CF)
+                        </p>
+                    </div>
+                </div>
+            </details>
+            
             <div class="game-stats">
                 <div class="stat-box">
                     <span>Score: </span><span class="score" id="score">0</span>
@@ -329,6 +590,22 @@
             <div class="transaction-panel">
                 <h2 style="margin-bottom: 15px; color: #764ba2;">📋 Monthly Transactions</h2>
                 <p style="margin-bottom: 15px; color: #666;">Select a transaction and process it. Watch how it affects all three statements!</p>
+                
+                <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <div style="width: 20px; height: 20px; background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); border-radius: 4px;"></div>
+                        <span style="font-size: 0.9em; color: #666;">Level 1</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <div style="width: 20px; height: 20px; background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%); border-radius: 4px;"></div>
+                        <span style="font-size: 0.9em; color: #666;">Level 2</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <div style="width: 20px; height: 20px; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); border-radius: 4px;"></div>
+                        <span style="font-size: 0.9em; color: #666;">Level 3</span>
+                    </div>
+                </div>
+                
                 <div id="transactions"></div>
                 <div class="controls">
                     <button class="btn-process" id="processBtn" disabled>Process Transaction</button>
@@ -345,54 +622,80 @@
                 <!-- Balance Sheet -->
                 <div class="statement">
                     <div class="statement-header">📊 Balance Sheet (as of current date)</div>
+                    <div class="statement-row header">
+                        <span>Account</span>
+                        <span style="text-align: center;">Beginning</span>
+                        <span style="text-align: right;">Current</span>
+                    </div>
                     <div class="section-label">Assets</div>
                     <div class="statement-row">
                         <span>Cash</span>
-                        <span id="cash">$10,000</span>
+                        <span style="text-align: center; color: #999;" id="beginCash">$10,000</span>
+                        <span style="text-align: right;" id="cash">$10,000</span>
                     </div>
                     <div class="statement-row">
                         <span>Accounts Receivable</span>
-                        <span id="ar">$0</span>
+                        <span style="text-align: center; color: #999;" id="beginAR">$500</span>
+                        <span style="text-align: right;" id="ar">$500</span>
                     </div>
                     <div class="statement-row">
                         <span>Inventory</span>
-                        <span id="inventory">$2,000</span>
+                        <span style="text-align: center; color: #999;" id="beginInventory">$2,000</span>
+                        <span style="text-align: right;" id="inventory">$2,000</span>
                     </div>
                     <div class="statement-row">
-                        <span>Equipment</span>
-                        <span id="equipment">$15,000</span>
+                        <span>Equipment (Gross)</span>
+                        <span style="text-align: center; color: #999;" id="beginEquipmentGross">$15,000</span>
+                        <span style="text-align: right;" id="equipmentGross">$15,000</span>
+                    </div>
+                    <div class="statement-row">
+                        <span style="margin-left: 20px;">Less: Accumulated Depreciation</span>
+                        <span style="text-align: center; color: #999;" id="beginAccumulatedDepreciation">$0</span>
+                        <span style="text-align: right;" id="accumulatedDepreciation">$0</span>
+                    </div>
+                    <div class="statement-row">
+                        <span style="margin-left: 20px;">Equipment (Net)</span>
+                        <span style="text-align: center; color: #999;" id="beginEquipment">$15,000</span>
+                        <span style="text-align: right;" id="equipment">$15,000</span>
                     </div>
                     <div class="statement-row total">
                         <span>Total Assets</span>
-                        <span id="totalAssets">$27,000</span>
+                        <span style="text-align: center; color: #999;" id="beginTotalAssets">$27,500</span>
+                        <span style="text-align: right;" id="totalAssets">$27,500</span>
                     </div>
 
                     <div class="section-label">Liabilities</div>
                     <div class="statement-row">
                         <span>Accounts Payable</span>
-                        <span id="ap">$1,000</span>
+                        <span style="text-align: center; color: #999;" id="beginAP">$500</span>
+                        <span style="text-align: right;" id="ap">$500</span>
                     </div>
                     <div class="statement-row">
                         <span>Loan Payable</span>
-                        <span id="loan">$10,000</span>
+                        <span style="text-align: center; color: #999;" id="beginLoan">$10,000</span>
+                        <span style="text-align: right;" id="loan">$10,000</span>
                     </div>
                     <div class="statement-row total">
                         <span>Total Liabilities</span>
-                        <span id="totalLiabilities">$11,000</span>
+                        <span style="text-align: center; color: #999;" id="beginTotalLiabilities">$10,500</span>
+                        <span style="text-align: right;" id="totalLiabilities">$10,500</span>
                     </div>
 
                     <div class="section-label">Equity</div>
                     <div class="statement-row">
                         <span>Owner's Equity</span>
-                        <span id="equity">$16,000</span>
+                        <span style="text-align: center; color: #999;" id="beginEquityOwner">$16,500</span>
+                        <span style="text-align: right;" id="equity">$16,500</span>
                     </div>
                     <div class="statement-row">
                         <span>Retained Earnings</span>
-                        <span id="retainedEarnings">$0</span>
+                        <span style="text-align: center; color: #999;" id="beginRetainedEarnings">$0</span>
+                        <span style="text-align: right;" id="retainedEarnings">$0</span>
                     </div>
                     <div class="statement-row total">
                         <span>Total Equity</span>
-                        <span id="totalEquity">$16,000</span>
+                        <span style="text-align: center; color: #999;" id="beginTotalEquity">$16,500</span>
+                        <span style="text-align: right;" id="totalEquity">$16,500</span>
                     </div>
                 </div>
 
@@ -423,6 +726,10 @@
                         <span id="wages">$0</span>
                     </div>
                     <div class="statement-row">
+                        <span>Depreciation Expense</span>
+                        <span id="depreciation">$0</span>
+                    </div>
+                    <div class="statement-row">
                         <span>Interest Expense</span>
                         <span id="interest">$0</span>
                     </div>
@@ -435,18 +742,26 @@
                 <!-- Cash Flow Statement -->
                 <div class="statement">
                     <div class="statement-header">💵 Cash Flow Statement (current period)</div>
-                    <div class="section-label">Operating Activities</div>
+                    <div class="section-label">Operating Activities (Indirect Method)</div>
                     <div class="statement-row">
-                        <span>Cash from Customers</span>
-                        <span id="cfCustomers">$0</span>
+                        <span>Net Income</span>
+                        <span id="cfNetIncome">$0</span>
                     </div>
                     <div class="statement-row">
-                        <span>Cash to Suppliers</span>
-                        <span id="cfSuppliers">$0</span>
+                        <span>Add: Depreciation Expense</span>
+                        <span id="cfDepreciation">$0</span>
                     </div>
                     <div class="statement-row">
-                        <span>Cash for Expenses</span>
-                        <span id="cfExpenses">$0</span>
+                        <span>Increase in Accounts Receivable</span>
+                        <span id="cfARChange">$0</span>
+                    </div>
+                    <div class="statement-row">
+                        <span>Decrease in Inventory</span>
+                        <span id="cfInventoryChange">$0</span>
+                    </div>
+                    <div class="statement-row">
+                        <span>Increase in Accounts Payable</span>
+                        <span id="cfAPChange">$0</span>
                     </div>
                     <div class="statement-row total">
                         <span>Net Cash from Operations</span>
@@ -461,7 +776,7 @@
 
                     <div class="section-label">Financing Activities</div>
                     <div class="statement-row">
-                        <span>Loan Payments</span>
+                        <span>Loan Proceeds/Payments</span>
                         <span id="cfFinancing">$0</span>
                     </div>
 
@@ -478,19 +793,33 @@
         // Game State
         let gameState = {
             cash: 10000,
-            ar: 0,
+            ar: 500,  // Changed from 0 to 500 so there's a change to show on CF
             inventory: 2000,
-            equipment: 15000,
-            ap: 1000,
+            equipmentGross: 15000,  // Gross fixed assets
+            accumulatedDepreciation: 0,  // Accumulated depreciation
+            equipment: 15000,  // Net fixed assets (Gross - Accumulated)
+            ap: 500,  // Changed from 0 to 500 so there's a change to show on CF
             loan: 10000,
-            equity: 16000,
+            equity: 16500,  // Adjusted to balance (Assets 27500 - Liabilities 10500)
             retainedEarnings: 0,
             sales: 0,
             cogs: 0,
             rent: 0,
             utilities: 0,
             wages: 0,
+            depreciation: 0,
             interest: 0,
+            // Beginning balances for Balance Sheet (to show changes)
+            beginCash: 10000,
+            beginningAR: 500,  // Changed to 500
+            beginningInventory: 2000,
+            beginEquipmentGross: 15000,
+            beginAccumulatedDepreciation: 0,
+            beginEquipment: 15000,
+            beginningAP: 500,  // Changed to 500
+            beginLoan: 10000,
+            beginEquityOwner: 16500,  // Updated to match current equity
+            beginRetainedEarnings: 0,
             cfCustomers: 0,
             cfSuppliers: 0,
             cfExpenses: 0,
@@ -498,7 +827,9 @@
             cfFinancing: 0,
             score: 0,
             streak: 0,
-            level: 1
+            level: 1,
+            processedTransactions: [], // Track which transactions have been processed
+            transactionHistory: {} // Track which transactions affected which accounts
         };
 
         let selectedTransaction = null;
@@ -519,11 +850,10 @@
                         cash: state.cash + 5000,
                         inventory: state.inventory - cogs,
                         sales: state.sales + 5000,
-                        cogs: state.cogs + cogs,
-                        cfCustomers: state.cfCustomers + 5000
+                        cogs: state.cogs + cogs
                     };
                 },
-                hint: "Cash sales increase Cash (BS), Sales Revenue (IS), and Cash from Customers (CF). Don't forget COGS reduces Inventory!"
+                hint: "Cash sales increase Cash (BS), Sales Revenue (IS), and inventory decreases by COGS. On the Cash Flow Statement (indirect method): sales increase Net Income, and inventory decrease is a source of cash!"
             },
             {
                 id: 2,
@@ -535,11 +865,10 @@
                 process: (state) => {
                     return {
                         cash: state.cash - 1500,
-                        inventory: state.inventory + 1500,
-                        cfSuppliers: state.cfSuppliers - 1500
+                        inventory: state.inventory + 1500
                     };
                 },
-                hint: "Buying inventory with cash: Cash goes down, Inventory goes up (both assets). Shows in Cash Flow as payment to suppliers. No income statement impact yet!"
+                hint: "Buying inventory with cash: Cash goes down, Inventory goes up (both assets). On indirect method CF: inventory increase uses cash!"
             },
             {
                 id: 3,
@@ -551,11 +880,10 @@
                 process: (state) => {
                     return {
                         cash: state.cash - 2000,
-                        rent: state.rent + 2000,
-                        cfExpenses: state.cfExpenses - 2000
+                        rent: state.rent + 2000
                     };
                 },
-                hint: "Rent payment: Cash decreases (BS), Rent Expense increases (IS), and shows as cash outflow for expenses (CF)."
+                hint: "Rent payment: Cash decreases (BS), Rent Expense increases (IS). On Cash Flow: expense reduces Net Income, and cash went out, so both effects show the cash decrease."
             },
             {
                 id: 4,
@@ -573,7 +901,7 @@
                         cogs: state.cogs + cogs
                     };
                 },
-                hint: "Credit sales: No cash yet! Accounts Receivable increases (BS), Sales and COGS hit Income Statement. Cash Flow not affected until payment received."
+                hint: "Credit sales: No cash yet! Accounts Receivable increases (BS), Sales and COGS hit Income Statement. On CF (indirect): sales increase Net Income, but AR increase means cash not collected yet (subtracts from operations)."
             },
             {
                 id: 5,
@@ -585,11 +913,10 @@
                 process: (state) => {
                     return {
                         cash: state.cash + 2500,
-                        ar: state.ar - 2500,
-                        cfCustomers: state.cfCustomers + 2500
+                        ar: state.ar - 2500
                     };
                 },
-                hint: "Collecting receivables: Cash up, AR down (both assets on BS). Shows in Cash Flow. No Income Statement impact - revenue was already recorded!"
+                hint: "Collecting receivables: Cash up, AR down (both assets on BS). On CF (indirect): AR decrease adds to cash from operations. No Income Statement impact - revenue was already recorded!"
             },
             {
                 id: 6,
@@ -601,11 +928,12 @@
                 process: (state) => {
                     return {
                         cash: state.cash - 5000,
+                        equipmentGross: state.equipmentGross + 5000,
                         equipment: state.equipment + 5000,
                         cfInvesting: state.cfInvesting - 5000
                     };
                 },
-                hint: "Equipment purchase: Cash decreases, Equipment increases (both BS). Shows in Investing Activities on Cash Flow. This is an asset, not an expense!"
+                hint: "Equipment purchase: Cash decreases, Equipment (Gross and Net) increases (both BS). Shows in Investing Activities on Cash Flow. This is an asset, not an expense!"
             },
             {
                 id: 13,
@@ -616,13 +944,14 @@
                 impacts: ['BS', 'CF'],
                 process: (state) => {
                     return {
+                        equipmentGross: state.equipmentGross + 8000,
                         equipment: state.equipment + 8000,
                         loan: state.loan + 8000,
                         cfInvesting: state.cfInvesting - 8000,
                         cfFinancing: state.cfFinancing + 8000
                     };
                 },
-                hint: "This transaction has TWO cash flow effects! Investing: -$8K for equipment purchase. Financing: +$8K from bank loan. Net cash flow = $0, but both activities must be shown separately. Equipment increases, Loan Payable increases."
+                hint: "This transaction has TWO cash flow effects! Investing: -$8K for equipment purchase. Financing: +$8K from bank loan. Net cash flow = $0, but both activities must be shown separately. Equipment (Gross and Net) increases, Loan Payable increases."
             },
             {
                 id: 7,
@@ -704,6 +1033,22 @@
                 hint: "Interest payment: Cash decreases (BS), Interest Expense increases (IS), operating cash outflow (CF). Interest is an expense, unlike principal!"
             },
             {
+                id: 14,
+                title: "Record Depreciation Expense",
+                amount: 500,
+                description: "Monthly depreciation on equipment (non-cash expense)",
+                level: 3,
+                impacts: ['BS', 'IS'],
+                process: (state) => {
+                    return {
+                        accumulatedDepreciation: state.accumulatedDepreciation + 500,
+                        equipment: state.equipment - 500,  // Net equipment decreases
+                        depreciation: state.depreciation + 500
+                    };
+                },
+                hint: "Depreciation is a NON-CASH expense! Accumulated Depreciation increases (contra-asset), reducing Net Equipment on the Balance Sheet. Depreciation Expense increases (IS), reducing Net Income. No CF impact because no cash was paid. The cash was already spent when we bought the equipment!"
+            },
+            {
                 id: 12,
                 title: "Pay Utilities",
                 amount: 300,
@@ -732,8 +1077,15 @@
             const currentLevel = gameState.level;
             const availableTransactions = transactions.filter(t => t.level <= currentLevel);
             
-            container.innerHTML = availableTransactions.map(t => `
-                <div class="transaction-card" data-id="${t.id}">
+            container.innerHTML = availableTransactions.map(t => {
+                const isProcessed = gameState.processedTransactions.includes(t.id);
+                return `
+                <div class="transaction-card level-${t.level} ${isProcessed ? 'processed' : ''}" data-id="${t.id}">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span style="background: rgba(255,255,255,0.9); padding: 4px 10px; border-radius: 12px; font-size: 0.85em; font-weight: bold; color: #764ba2;">
+                            Level ${t.level}
+                        </span>
+                    </div>
                     <div class="transaction-title">
                         ${t.title}
                         ${t.impacts.map(i => `<span class="impact-indicator impact-${i.toLowerCase()}">${i}</span>`).join('')}
@@ -741,11 +1093,17 @@
                     <div class="transaction-amount">$${t.amount.toLocaleString()}</div>
                     <div class="transaction-desc">${t.description}</div>
                 </div>
-            `).join('');
+            `}).join('');
 
             // Add click handlers
             document.querySelectorAll('.transaction-card').forEach(card => {
-                card.addEventListener('click', () => selectTransaction(parseInt(card.dataset.id)));
+                const id = parseInt(card.dataset.id);
+                const isProcessed = gameState.processedTransactions.includes(id);
+                if (!isProcessed) {
+                    card.addEventListener('click', () => selectTransaction(id));
+                } else {
+                    card.addEventListener('click', () => unprocessTransaction(id));
+                }
             });
         }
 
@@ -766,6 +1124,9 @@
         function processTransaction() {
             if (!selectedTransaction) return;
 
+            // Mark this transaction as processed
+            gameState.processedTransactions.push(selectedTransaction.id);
+
             // Clear previous highlights
             changedElements.forEach(el => el.classList.remove('changed'));
             changedElements = [];
@@ -776,6 +1137,20 @@
             // Process transaction
             const updates = selectedTransaction.process(gameState);
             Object.assign(gameState, updates);
+            
+            // Track which accounts this transaction affected
+            Object.keys(updates).forEach(account => {
+                if (oldState[account] !== gameState[account]) {
+                    if (!gameState.transactionHistory[account]) {
+                        gameState.transactionHistory[account] = [];
+                    }
+                    gameState.transactionHistory[account].push({
+                        id: selectedTransaction.id,
+                        title: selectedTransaction.title,
+                        change: gameState[account] - oldState[account]
+                    });
+                }
+            });
 
             // Calculate derived values
             updateDerivedValues();
@@ -803,6 +1178,62 @@
                 card.classList.remove('selected');
             });
             document.getElementById('processBtn').disabled = true;
+            
+            // Re-render transactions to show processed state
+            renderTransactions();
+        }
+
+        function unprocessTransaction(id) {
+            if (!confirm('Undo this transaction? This will reverse its effects on the financial statements.')) {
+                return;
+            }
+
+            const transaction = transactions.find(t => t.id === id);
+            if (!transaction) return;
+
+            // Remove from processed list
+            gameState.processedTransactions = gameState.processedTransactions.filter(tid => tid !== id);
+            
+            // Remove from transaction history
+            Object.keys(gameState.transactionHistory).forEach(account => {
+                gameState.transactionHistory[account] = gameState.transactionHistory[account].filter(
+                    tx => tx.id !== id
+                );
+            });
+
+            // Clear previous highlights
+            changedElements.forEach(el => el.classList.remove('changed'));
+            changedElements = [];
+
+            // Store old state for comparison
+            const oldState = {...gameState};
+
+            // Reverse the transaction by applying negative effects
+            const updates = transaction.process(gameState);
+            Object.keys(updates).forEach(key => {
+                // Reverse the update: subtract what was added, add what was subtracted
+                const change = updates[key] - oldState[key];
+                gameState[key] = oldState[key] - change;
+            });
+
+            // Calculate derived values
+            updateDerivedValues();
+
+            // Update display
+            updateDisplay();
+
+            // Highlight changed elements
+            highlightChanges(oldState, gameState);
+
+            // Reduce score (but don't go negative)
+            gameState.score = Math.max(0, gameState.score - (100 * gameState.level));
+            updateScore();
+
+            // Show feedback
+            showFeedback(true, `Transaction reversed! Effects have been undone from the financial statements.`);
+
+            // Re-render transactions
+            renderTransactions();
         }
 
         function updateDerivedValues() {
@@ -812,7 +1243,7 @@
             
             // Calculate net income
             const totalRevenue = gameState.sales;
-            const totalExpenses = gameState.cogs + gameState.rent + gameState.utilities + gameState.wages + gameState.interest;
+            const totalExpenses = gameState.cogs + gameState.rent + gameState.utilities + gameState.wages + gameState.depreciation + gameState.interest;
             gameState.netIncome = totalRevenue - totalExpenses;
             
             // Update retained earnings with net income
@@ -821,40 +1252,76 @@
             // Calculate total equity
             gameState.totalEquity = gameState.equity + gameState.retainedEarnings;
             
-            // Calculate cash flow totals
-            gameState.cfOperations = gameState.cfCustomers + gameState.cfSuppliers + gameState.cfExpenses;
+            // Calculate working capital changes (Indirect Method)
+            gameState.arChange = gameState.ar - gameState.beginningAR;
+            gameState.inventoryChange = gameState.beginningInventory - gameState.inventory; // Decrease is positive
+            gameState.apChange = gameState.ap - gameState.beginningAP;
+            
+            // Calculate cash flow from operations (Indirect Method)
+            gameState.cfOperations = gameState.netIncome 
+                + gameState.depreciation 
+                - gameState.arChange 
+                + gameState.inventoryChange 
+                + gameState.apChange;
+            
+            // Calculate net cash change
             gameState.netCashChange = gameState.cfOperations + gameState.cfInvesting + gameState.cfFinancing;
         }
 
         function updateDisplay() {
-            // Balance Sheet
-            document.getElementById('cash').textContent = formatCurrency(gameState.cash);
-            document.getElementById('ar').textContent = formatCurrency(gameState.ar);
-            document.getElementById('inventory').textContent = formatCurrency(gameState.inventory);
-            document.getElementById('equipment').textContent = formatCurrency(gameState.equipment);
+            // Balance Sheet - Beginning Balances
+            document.getElementById('beginCash').textContent = formatCurrency(gameState.beginCash);
+            document.getElementById('beginAR').textContent = formatCurrency(gameState.beginningAR);
+            document.getElementById('beginInventory').textContent = formatCurrency(gameState.beginningInventory);
+            document.getElementById('beginEquipmentGross').textContent = formatCurrency(gameState.beginEquipmentGross);
+            document.getElementById('beginAccumulatedDepreciation').textContent = formatCurrency(gameState.beginAccumulatedDepreciation);
+            document.getElementById('beginEquipment').textContent = formatCurrency(gameState.beginEquipment);
+            const beginTotalAssets = gameState.beginCash + gameState.beginningAR + gameState.beginningInventory + gameState.beginEquipment;
+            document.getElementById('beginTotalAssets').textContent = formatCurrency(beginTotalAssets);
+            
+            document.getElementById('beginAP').textContent = formatCurrency(gameState.beginningAP);
+            document.getElementById('beginLoan').textContent = formatCurrency(gameState.beginLoan);
+            const beginTotalLiabilities = gameState.beginningAP + gameState.beginLoan;
+            document.getElementById('beginTotalLiabilities').textContent = formatCurrency(beginTotalLiabilities);
+            
+            document.getElementById('beginEquityOwner').textContent = formatCurrency(gameState.beginEquityOwner);
+            document.getElementById('beginRetainedEarnings').textContent = formatCurrency(gameState.beginRetainedEarnings);
+            const beginTotalEquity = gameState.beginEquityOwner + gameState.beginRetainedEarnings;
+            document.getElementById('beginTotalEquity').textContent = formatCurrency(beginTotalEquity);
+            
+            // Balance Sheet - Current Balances (with tooltips)
+            document.getElementById('cash').innerHTML = formatCurrencyWithTooltip(gameState.cash, 'cash');
+            document.getElementById('ar').innerHTML = formatCurrencyWithTooltip(gameState.ar, 'ar');
+            document.getElementById('inventory').innerHTML = formatCurrencyWithTooltip(gameState.inventory, 'inventory');
+            document.getElementById('equipmentGross').innerHTML = formatCurrencyWithTooltip(gameState.equipmentGross, 'equipmentGross');
+            document.getElementById('accumulatedDepreciation').innerHTML = formatCurrencyWithTooltip(gameState.accumulatedDepreciation, 'accumulatedDepreciation');
+            document.getElementById('equipment').innerHTML = formatCurrencyWithTooltip(gameState.equipment, 'equipment');
             document.getElementById('totalAssets').textContent = formatCurrency(gameState.totalAssets);
             
-            document.getElementById('ap').textContent = formatCurrency(gameState.ap);
-            document.getElementById('loan').textContent = formatCurrency(gameState.loan);
+            document.getElementById('ap').innerHTML = formatCurrencyWithTooltip(gameState.ap, 'ap');
+            document.getElementById('loan').innerHTML = formatCurrencyWithTooltip(gameState.loan, 'loan');
             document.getElementById('totalLiabilities').textContent = formatCurrency(gameState.totalLiabilities);
             
-            document.getElementById('equity').textContent = formatCurrency(gameState.equity);
-            document.getElementById('retainedEarnings').textContent = formatCurrency(gameState.retainedEarnings);
+            document.getElementById('equity').innerHTML = formatCurrencyWithTooltip(gameState.equity, 'equity');
+            document.getElementById('retainedEarnings').innerHTML = formatCurrencyWithTooltip(gameState.retainedEarnings, 'retainedEarnings');
             document.getElementById('totalEquity').textContent = formatCurrency(gameState.totalEquity);
             
-            // Income Statement
-            document.getElementById('sales').textContent = formatCurrency(gameState.sales);
-            document.getElementById('cogs').textContent = formatCurrency(gameState.cogs);
-            document.getElementById('rent').textContent = formatCurrency(gameState.rent);
-            document.getElementById('utilities').textContent = formatCurrency(gameState.utilities);
-            document.getElementById('wages').textContent = formatCurrency(gameState.wages);
-            document.getElementById('interest').textContent = formatCurrency(gameState.interest);
+            // Income Statement (with tooltips)
+            document.getElementById('sales').innerHTML = formatCurrencyWithTooltip(gameState.sales, 'sales');
+            document.getElementById('cogs').innerHTML = formatCurrencyWithTooltip(gameState.cogs, 'cogs');
+            document.getElementById('rent').innerHTML = formatCurrencyWithTooltip(gameState.rent, 'rent');
+            document.getElementById('utilities').innerHTML = formatCurrencyWithTooltip(gameState.utilities, 'utilities');
+            document.getElementById('wages').innerHTML = formatCurrencyWithTooltip(gameState.wages, 'wages');
+            document.getElementById('depreciation').innerHTML = formatCurrencyWithTooltip(gameState.depreciation, 'depreciation');
+            document.getElementById('interest').innerHTML = formatCurrencyWithTooltip(gameState.interest, 'interest');
             document.getElementById('netIncome').textContent = formatCurrency(gameState.netIncome, true);
             
             // Cash Flow
-            document.getElementById('cfCustomers').textContent = formatCurrency(gameState.cfCustomers, true);
-            document.getElementById('cfSuppliers').textContent = formatCurrency(gameState.cfSuppliers, true);
-            document.getElementById('cfExpenses').textContent = formatCurrency(gameState.cfExpenses, true);
+            document.getElementById('cfNetIncome').textContent = formatCurrency(gameState.netIncome, true);
+            document.getElementById('cfDepreciation').textContent = formatCurrency(gameState.depreciation);
+            document.getElementById('cfARChange').textContent = formatCurrency(-gameState.arChange, true);
+            document.getElementById('cfInventoryChange').textContent = formatCurrency(gameState.inventoryChange, true);
+            document.getElementById('cfAPChange').textContent = formatCurrency(gameState.apChange, true);
             document.getElementById('cfOperations').textContent = formatCurrency(gameState.cfOperations, true);
             document.getElementById('cfInvesting').textContent = formatCurrency(gameState.cfInvesting, true);
             document.getElementById('cfFinancing').textContent = formatCurrency(gameState.cfFinancing, true);
@@ -863,12 +1330,12 @@
 
         function highlightChanges(oldState, newState) {
             const mappings = {
-                cash: 'cash', ar: 'ar', inventory: 'inventory', equipment: 'equipment',
+                cash: 'cash', ar: 'ar', inventory: 'inventory',
+                equipmentGross: 'equipmentGross', accumulatedDepreciation: 'accumulatedDepreciation', equipment: 'equipment',
                 ap: 'ap', loan: 'loan', retainedEarnings: 'retainedEarnings',
                 sales: 'sales', cogs: 'cogs', rent: 'rent', utilities: 'utilities',
-                wages: 'wages', interest: 'interest', netIncome: 'netIncome',
-                cfCustomers: 'cfCustomers', cfSuppliers: 'cfSuppliers',
-                cfExpenses: 'cfExpenses', cfOperations: 'cfOperations',
+                wages: 'wages', depreciation: 'depreciation', interest: 'interest', netIncome: 'netIncome',
+                cfOperations: 'cfOperations',
                 cfInvesting: 'cfInvesting', cfFinancing: 'cfFinancing',
                 netCashChange: 'netCashChange'
             };
@@ -891,22 +1358,57 @@
                 minimumFractionDigits: 0
             });
             
-            if (showSign && value < 0) {
-                return `(${formatted})`;
+            if (value < 0) {
+                if (showSign) {
+                    return `(${formatted})`;
+                } else {
+                    return '-' + formatted;
+                }
             }
             return formatted;
+        }
+
+        function formatCurrencyWithTooltip(value, accountName) {
+            const formattedValue = formatCurrency(value);
+            const history = gameState.transactionHistory[accountName];
+            
+            if (!history || history.length === 0) {
+                return `<span class="account-value">${formattedValue}</span>`;
+            }
+            
+            let tooltipContent = '<div class="tooltip-title">Transactions:</div>';
+            history.forEach(tx => {
+                const changeClass = tx.change > 0 ? 'tooltip-change-positive' : 'tooltip-change-negative';
+                const changeSign = tx.change > 0 ? '+' : '';
+                tooltipContent += `
+                    <div class="tooltip-transaction">
+                        <span>${tx.title}</span>
+                        <span class="${changeClass}">${changeSign}${formatCurrency(tx.change)}</span>
+                    </div>
+                `;
+            });
+            
+            return `
+                <span class="account-value">
+                    ${formattedValue}
+                    <div class="account-tooltip">
+                        ${tooltipContent}
+                    </div>
+                </span>
+            `;
         }
 
         function updateScore() {
             document.getElementById('score').textContent = gameState.score.toLocaleString();
             document.getElementById('streak').textContent = gameState.streak;
+            updateLevelProgress();
         }
 
         function checkLevelUp() {
             const oldLevel = gameState.level;
-            if (gameState.score >= 2000 && gameState.level < 3) {
+            if (gameState.score >= 1000 && gameState.level < 3) {
                 gameState.level = 3;
-            } else if (gameState.score >= 1000 && gameState.level < 2) {
+            } else if (gameState.score >= 500 && gameState.level < 2) {
                 gameState.level = 2;
             }
 
@@ -916,6 +1418,27 @@
                 renderTransactions();
                 showFeedback(true, `🎉 Level Up! You've reached ${levelNames[gameState.level]} level! More transactions unlocked!`);
             }
+            
+            // Update level progress display
+            updateLevelProgress();
+        }
+
+        function updateLevelProgress() {
+            const score = gameState.score;
+            const level = gameState.level;
+            let nextLevelScore, progressText;
+            
+            if (level === 1) {
+                nextLevelScore = 500;
+                progressText = `${score}/500 points to Level 2`;
+            } else if (level === 2) {
+                nextLevelScore = 1000;
+                progressText = `${score}/1000 points to Level 3`;
+            } else {
+                progressText = `Max Level Reached!`;
+            }
+            
+            document.getElementById('level').textContent = `Level ${level}: ${progressText}`;
         }
 
         function showFeedback(isCorrect, message) {
@@ -939,12 +1462,18 @@
         function resetGame() {
             if (confirm('Are you sure you want to reset the game? You will lose all progress.')) {
                 gameState = {
-                    cash: 10000, ar: 0, inventory: 2000, equipment: 15000,
-                    ap: 1000, loan: 10000, equity: 16000, retainedEarnings: 0,
-                    sales: 0, cogs: 0, rent: 0, utilities: 0, wages: 0, interest: 0,
+                    cash: 10000, ar: 500, inventory: 2000,
+                    equipmentGross: 15000, accumulatedDepreciation: 0, equipment: 15000,
+                    ap: 500, loan: 10000, equity: 16500, retainedEarnings: 0,
+                    sales: 0, cogs: 0, rent: 0, utilities: 0, wages: 0, depreciation: 0, interest: 0,
+                    beginCash: 10000, beginningAR: 500, beginningInventory: 2000,
+                    beginEquipmentGross: 15000, beginAccumulatedDepreciation: 0, beginEquipment: 15000,
+                    beginningAP: 500, beginLoan: 10000, beginEquityOwner: 16500, beginRetainedEarnings: 0,
                     cfCustomers: 0, cfSuppliers: 0, cfExpenses: 0,
                     cfInvesting: 0, cfFinancing: 0,
-                    score: 0, streak: 0, level: 1
+                    score: 0, streak: 0, level: 1,
+                    processedTransactions: [],
+                    transactionHistory: {}
                 };
                 updateDerivedValues();
                 updateDisplay();
